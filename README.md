@@ -38,21 +38,20 @@ Queries Executed at DBMS lab in MYSQL in 5th sem at SJCE, JSS STU
      OWNS (driver id#: string, regno: string) 
      PARTICIPATED(driver id#:string, regno:string, report_ number: int,damage_amount: int) 
  
-C. Order processing database 
-Customer (Cust#:int, cname: string, city: string) 
-Order (order#:int, odate: date, cust#: int, order-amt: int) 
-Order-item (order#:int, Item#: int, qty: int) 
-Item (item#:int, unitprice: int) 
-Shipment (order#:int, warehouse#: int, ship-date: date) 
-Warehouse (warehouse#:int, city: string) 
+   C. Order processing database 
+      Customer (Cust#:int, cname: string, city: string) 
+      Order (order#:int, odate: date, cust#: int, order-amt: int) 
+      Order-item (order#:int, Item#: int, qty: int) 
+      Item (item#:int, unitprice: int) 
+      Shipment (order#:int, warehouse#: int, ship-date: date) 
+      Warehouse (warehouse#:int, city: string) 
  
-D. Student enrollment in courses and books adopted for each course 
-STUDENT (regno: string, name: string, major: string, bdate: date) 
-COURSE (course#:int, cname: string, dept: string) 
-ENROLL(regno:string, course#: int,sem: int,marks: int) 
-BOOK-ADOPTION (course#:int, sem: int, book-ISBN: int) 
-TEXT (book-ISBN: int, book-title: string, publisher: string,author: 
-string) 
+   D. Student enrollment in courses and books adopted for each course 
+      STUDENT (regno: string, name: string, major: string, bdate: date) 
+      COURSE (course#:int, cname: string, dept: string) 
+      ENROLL(regno:string, course#: int,sem: int,marks: int) 
+      BOOK-ADOPTION (course#:int, sem: int, book-ISBN: int) 
+      TEXT (book-ISBN: int, book-title: string, publisher: string,author: string) 
  
 E. Company Database: 
 EMPLOYEE (SSN, Name, Address, Sex, Salary, SuperSSN, DNo) 
