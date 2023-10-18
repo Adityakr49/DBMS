@@ -1,0 +1,174 @@
+DATABASE INSURANCE
+
+USE ADITYA_007;
+
+CREATE TABLE PERSON (
+driver_id VARCHAR(255) NOT NULL,
+name TEXT NOT NULL,
+address TEXT NOT NULL,
+PRIMARY KEY (driver_id)
+);
+
+CREATE TABLE CAR (
+reg_no VARCHAR(255) NOT NULL,
+model TEXT NOT NULL,
+year INTEGER,
+PRIMARY KEY (reg_no)
+);
+
+CREATE TABLE ACCIDENT (
+report_no INTEGER NOT NULL,
+acc_date DATE,
+location TEXT,
+PRIMARY KEY (report_no)
+);
+
+CREATE TABLE OWNS (
+driver_id VARCHAR(255) NOT NULL,
+reg_no VARCHAR(255) NOT NULL,
+FOREIGN KEY (driver_id) REFERENCES PERSON(driver_id) ON DELETE CASCADE,
+FOREIGN KEY (reg_no) REFERENCES CAR(reg_no) ON DELETE CASCADE
+);
+
+CREATE TABLE PARTICIPATED (
+driver_id VARCHAR(255) NOT NULL,
+reg_no VARCHAR(255) NOT NULL,
+report_no INTEGER NOT NULL,
+damage_amount FLOAT NOT NULL,
+FOREIGN KEY (driver_id) REFERENCES PERSON(driver_id) ON DELETE CASCADE,
+FOREIGN KEY (reg_no) REFERENCES CAR(reg_no) ON DELETE CASCADE,
+FOREIGN KEY (report_no) REFERENCES ACCIDENT(report_no)
+);
+
+INSERT INTO PERSON VALUES
+("DA1B2", "VERSTAPPEN", "BELGIUM"),
+("DC3D4", "HAMILTON", "UK"),
+("DE5F6", "SAINZ", "SPAIN"),
+("DG7H8", "PIASTRI", "AUS"),
+("DI9J9", "GASLY", "FRANCE");
+
+INSERT INTO CAR VALUES
+("F1-4223", "REDBULL", 2023),
+("F1-5674", "MERCEDES", 2023),
+("F1-5473", "FERRARI", 2023),
+("F1-4728", "MCLAREN", 2023),
+("F1-1234", "ALPINE", 2023);
+
+INSERT INTO ACCIDENT VALUES
+(43627, "2020-04-05", "Monaco"),
+(56345, "2019-12-16", "Silverstone"),
+(63744, "2020-05-14", "Villeneuve"),
+(54634, "2019-08-30", "Hungaroring"),
+(65738, "2021-01-21", "Suzuka"),
+(66666, "2021-01-21", "Zandvoort");
+
+INSERT INTO OWNS VALUES
+("DA1B2", "F1-4223"),
+("DC3D4", "F1-5674"),
+("DE5F6", "F1-5473"),
+("DG7H8", "F1-4728"),
+("DI9J9", "F1-1234");
+
+INSERT INTO PARTICIPATED VALUES
+("DA1B2", "F1-4223", 43627, 2000000),
+("DC3D4", "F1-5674", 56345, 4900500),
+("DE5F6", "F1-5473", 63744, 1005000),
+("DG7H8", "F1-4728", 54634, 5000000),
+("DI9J9", "F1-1234", 65738, 2005000);
+
+
+
+-- Find the total number of people who owned a car that were involved in accidents in 2019
+
+select COUNT(driver_id)
+from PARTICIPATED p, ACCIDENT a
+where p.report_no=a.report_no and a.accident_date like "2019%";
+
+-- Find the number of accident in which cars belonging to lewis was involved
+
+select COUNT(distinct a.report_no)
+from ACCIDENT a
+where exists 
+(select * from PERSON p, PARTICIPATED ptd where p.driver_id=ptd.driver_id and name="HAMILTON" and a.report_no=ptd.report_no);
+
+-- Add a new accident to the database
+
+insert into ACCIDENT values
+(45562, "2024-04-05", "TOKYO");
+
+insert into PARTICIPATED values
+("DC3D4", "F1-4728", 45562, 5200000);
+
+
+-- Delete the ALPINE belonging to GASLY
+
+delete from CAR
+where model="ALPINE" and reg_no in
+(select CAR.reg_no from PERSON p, OWNS o where p.driver_id=o.driver_id and o.reg_no=CAR.reg_no and p.name="GASLY");
+
+
+-- Update the damage amount for the car with reg_no of F1-1234 in the accident with report_no 65738
+
+update PARTICIPATED set damage_amount=10000 where report_no=65738 and reg_no="F1-1234";
+
+-- View that shows models and years of car that are involved in accident
+
+create view CarsInAccident as
+select distinct model, year
+from CAR c, PARTICIPATED p
+where c.reg_no=p.reg_no;
+
+select * from CarsInAccident;
+
+-- Create a view that shows name and address of drivers who own a car.
+
+create view DriversWithCar as
+select name, address
+from PERSON p, OWNS o
+where p.driver_id=o.driver_id;
+
+select * from DriversWithCar;
+
+
+-- Create a view that shows the names of the drivers who a participated in a accident in a specific place.
+
+create view DriversWithAccidentInPlace as
+select name
+from PERSON p, ACCIDENT a, PARTICIPATED ptd
+where p.driver_id = ptd.driver_id and a.report_no = ptd.report_no and a.location="Hungaroring";
+
+select * from DriversWithAccidentInPlace;
+
+-- Trigger that prevents a driver with total_damage_amount greater than Rs. 50,000 from owning a car
+
+delimiter //
+create or replace trigger PreventOwnership 
+before insert on owns 
+for each row
+begin
+	if new.driver_id in (select driver_id from PARTICIPATED group by driver_id
+having sum(damage_amount) >= 50000) then
+	signal sqlstate '45000' set message_text = 'Damage Greater than Rs.50,000';
+	end if;
+end;//
+
+delimiter ;
+
+insert into owns VALUES
+("DC3D4", "F1-5473"); -- Will give error since total damage amount of D222 exceeds 50k
+
+-- A trigger that prevents a driver from participating in more than 2 accidents in a given year.
+
+DELIMITER //
+create trigger PreventParticipation
+before insert on PARTICIPATED
+for each row
+BEGIN
+	IF 2<=(select count(*) from PARTICIPATED where driver_id=new.driver_id) THEN
+		signal sqlstate '45000' set message_text='Driver has already participated in 2 accidents';
+	END IF;
+END;//
+DELIMITER ;
+
+INSERT INTO participated VALUES
+("DC3D4", "F1-4223", 66666, 2000000);
