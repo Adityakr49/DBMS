@@ -25,44 +25,46 @@
 3. Consider the database schemas given below. Write ER diagram and schema diagram, create tables, enter data, alter tables, add/drop constraints, and perform delete/update operations.
    ## a. Sailors Database
 
-### SAILORS
+## a. Sailors Database
+
+**SAILORS**
 - `sid` (int): Sailor ID
 - `sname` (string): Sailor's Name
 - `rating` (int): Rating
 - `age` (int): Age
 
-### BOAT
+**BOAT**
 - `bid` (int): Boat ID
 - `bname` (string): Boat Name
 - `color` (string): Boat Color
 
-### RESERVERS
+**RESERVERS**
 - `sid` (int): Sailor ID
 - `bid` (int): Boat ID
 - `date` (date): Reservation Date
 
 ## b. Insurance Database
 
-### PERSON
+**PERSON**
 - `driver id#` (string): Driver ID
 - `name` (string): Name
 - `address` (string): Address
 
-### CAR
+**CAR**
 - `regno` (string): Registration Number
 - `model` (string): Car Model
 - `year` (int): Car Year
 
-### ACCIDENT
+**ACCIDENT**
 - `report_number` (int): Accident Report Number
 - `acc_date` (date): Accident Date
 - `location` (string): Accident Location
 
-### OWNS
+**OWNS**
 - `driver id#` (string): Driver ID
 - `regno` (string): Registration Number
 
-### PARTICIPATED
+**PARTICIPATED**
 - `driver id#` (string): Driver ID
 - `regno` (string): Registration Number
 - `report_number` (int): Report Number
@@ -70,60 +72,60 @@
 
 ## c. Order Processing Database
 
-### Customer
+**Customer**
 - `Cust#` (int): Customer Number
 - `cname` (string): Customer Name
 - `city` (string): City
 
-### Order
+**Order**
 - `order#` (int): Order Number
 - `odate` (date): Order Date
 - `cust#` (int): Customer Number
 - `order-amt` (int): Order Amount
 
-### Order-item
+**Order-item**
 - `order#` (int): Order Number
 - `Item#` (int): Item Number
 - `qty` (int): Quantity
 
-### Item
+**Item**
 - `item#` (int): Item Number
 - `unitprice` (int): Unit Price
 
-### Shipment
+**Shipment**
 - `order#` (int): Order Number
 - `warehouse#` (int): Warehouse Number
 - `ship-date` (date): Shipment Date
 
-### Warehouse
+**Warehouse**
 - `warehouse#` (int): Warehouse Number
 - `city` (string): City
 
 ## d. Student Enrollment in Courses and Books Adopted for Each Course
 
-### STUDENT
+**STUDENT**
 - `regno` (string): Registration Number
 - `name` (string): Name
 - `major` (string): Major
 - `bdate` (date): Birth Date
 
-### COURSE
+**COURSE**
 - `course#` (int): Course Number
 - `cname` (string): Course Name
 - `dept` (string): Department
 
-### ENROLL
+**ENROLL**
 - `regno` (string): Registration Number
 - `course#` (int): Course Number
 - `sem` (int): Semester
 - `marks` (int): Marks
 
-### BOOK-ADOPTION
+**BOOK-ADOPTION**
 - `course#` (int): Course Number
 - `sem` (int): Semester
 - `book-ISBN` (int): Book ISBN
 
-### TEXT
+**TEXT**
 - `book-ISBN` (int): Book ISBN
 - `book-title` (string): Book Title
 - `publisher` (string): Publisher
@@ -131,7 +133,7 @@
 
 ## e. Company Database
 
-### EMPLOYEE
+**EMPLOYEE**
 - `SSN` (string): Social Security Number
 - `Name` (string): Employee Name
 - `Address` (string): Address
@@ -140,23 +142,23 @@
 - `SuperSSN` (string): Supervisor's Social Security Number
 - `DNo` (int): Department Number
 
-### DEPARTMENT
+**DEPARTMENT**
 - `DNo` (int): Department Number
 - `DName` (string): Department Name
 - `MgrSSN` (string): Manager's Social Security Number
 - `MgrStartDate` (date): Manager's Start Date
 
-### DLOCATION
+**DLOCATION**
 - `DNo` (int): Department Number
 - `DLoc` (string): Location
 
-### PROJECT
+**PROJECT**
 - `PNo` (int): Project Number
 - `PName` (string): Project Name
 - `PLocation` (string): Project Location
 - `DNo` (int): Department Number
 
-### WORKS_ON
+**WORKS_ON**
 - `SSN` (string): Social Security Number
 - `PNo` (int): Project Number
 - `Hours` (int): Work Hours
