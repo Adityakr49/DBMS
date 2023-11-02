@@ -139,36 +139,5 @@ where p.driver_id = ptd.driver_id and a.report_no = ptd.report_no and a.location
 
 select * from DriversWithAccidentInPlace;
 
--- Trigger that prevents a driver with total_damage_amount greater than Rs. 50,000 from owning a car
-
-delimiter //
-create or replace trigger PreventOwnership 
-before insert on owns 
-for each row
-begin
-	if new.driver_id in (select driver_id from PARTICIPATED group by driver_id
-having sum(damage_amount) >= 50000) then
-	signal sqlstate '45000' set message_text = 'Damage Greater than Rs.50,000';
-	end if;
-end;//
-
-delimiter ;
-
-insert into owns VALUES
-("DC3D4", "F1-5473"); -- Will give error since total damage amount of D222 exceeds 50k
-
--- A trigger that prevents a driver from participating in more than 2 accidents in a given year.
-
-DELIMITER //
-create trigger PreventParticipation
-before insert on PARTICIPATED
-for each row
-BEGIN
-	IF 2<=(select count(*) from PARTICIPATED where driver_id=new.driver_id) THEN
-		signal sqlstate '45000' set message_text='Driver has already participated in 2 accidents';
-	END IF;
-END;//
-DELIMITER ;
-
 INSERT INTO participated VALUES
 ("DC3D4", "F1-4223", 66666, 2000000);

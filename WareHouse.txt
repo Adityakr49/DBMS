@@ -1,0 +1,140 @@
+-- Create tables
+CREATE TABLE Customer (
+    Cust INT PRIMARY KEY,
+    cname VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Orders (
+    oid INT PRIMARY KEY,
+    odate DATE,
+    cust INT,
+    oid_amt INT,
+    FOREIGN KEY (cust) REFERENCES Customer(Cust)
+);
+CREATE TABLE Item (
+    Item INT PRIMARY KEY,
+    unitprice INT
+);
+
+CREATE TABLE OrderItem (
+    oid INT,
+    Item INT,
+    qty INT,
+    PRIMARY KEY (oid, Item),
+    FOREIGN KEY (oid) REFERENCES Orders(oid),
+    FOREIGN KEY (Item) REFERENCES Item(Item)
+);
+
+CREATE TABLE Warehouse (
+    warehouse INT PRIMARY KEY,
+    city VARCHAR(50)
+);
+
+CREATE TABLE Shipment (
+    oid INT,
+    warehouse INT,
+    ship_date DATE,
+    PRIMARY KEY (oid),
+    FOREIGN KEY (oid) REFERENCES Orders(oid),
+    FOREIGN KEY (warehouse) REFERENCES Warehouse(warehouse)
+);
+
+
+-- Insert data into Customer table
+INSERT INTO Customer (Cust, cname, city)
+VALUES
+    (101, 'Customer 1', 'New York'),
+    (102, 'Customer 2', 'Los Angeles'),
+    (103, 'Customer 3', 'Chicago'),
+    (104, 'Customer 4', 'Houston'),
+    (105, 'Customer 5', 'Miami');
+
+-- Insert data into Orders table
+INSERT INTO Orders (oid, odate, cust, oid_amt)
+VALUES
+    (201, '2023-01-15', 101, 500),
+    (202, '2023-02-20', 102, 600),
+    (203, '2023-03-10', 103, 750),
+    (204, '2023-04-05', 104, 400),
+    (205, '2023-05-15', 105, 550);
+    
+-- Insert data into Item table
+INSERT INTO Item (Item, unitprice)
+VALUES
+    (301, 50),
+    (302, 60),
+    (303, 75),
+    (304, 40),
+    (305, 55);
+
+-- Insert data into OrderItem table
+INSERT INTO OrderItem (oid, Item, qty)
+VALUES
+    (201, 301, 3),
+    (202, 302, 4),
+    (203, 303, 2),
+    (204, 304, 5),
+    (205, 305, 6);
+
+-- Insert data into Warehouse table
+INSERT INTO Warehouse (warehouse, city)
+VALUES
+    (401, 'New York'),
+    (402, 'Los Angeles'),
+    (403, 'Chicago'),
+    (404, 'Houston'),
+    (405, 'Miami');
+    
+-- Insert data into Shipment table
+INSERT INTO Shipment (oid, warehouse, ship_date)
+VALUES
+    (201, 401, '2023-01-20'),
+    (202, 402, '2023-02-25'),
+    (203, 403, '2023-03-15'),
+    (204, 404, '2023-04-10'),
+    (205, 405, '2023-05-20');
+
+
+-- Alterations
+-- Add a new field "email" to the Customer table
+ALTER TABLE Customer
+ADD email VARCHAR(100);
+
+-- Drop the "city" field from the Warehouse table
+ALTER TABLE Warehouse
+DROP city;
+
+-- Adding and Dropping Constraints
+-- Add a unique constraint to the "email" field in the Customer table
+ALTER TABLE Customer
+ADD CONSTRAINT unique_email UNIQUE (email);
+
+-- Drop the unique constraint on the "email" field in the Customer table
+ALTER TABLE Customer
+DROP CONSTRAINT unique_email;
+
+-- Add a check constraint to the "unitprice" field in the Item table
+ALTER TABLE Item
+ADD CONSTRAINT check_unitprice CHECK (unitprice > 0);
+
+-- Drop the check constraint on the "unitprice" field in the Item table
+ALTER TABLE Item
+DROP CONSTRAINT check_unitprice;
+
+-- Add a new field "item_description" to the Item table
+ALTER TABLE Item
+ADD item_description VARCHAR(255);
+
+-- Drop the "oid_amt" field from the Orders table
+ALTER TABLE Orders
+DROP oid_amt;
+
+-- Display data from the tables
+SELECT * FROM Customer;
+SELECT * FROM Orders;
+SELECT * FROM OrderItem;
+SELECT * FROM Item;
+SELECT * FROM Shipment;
+SELECT * FROM Warehouse;
+

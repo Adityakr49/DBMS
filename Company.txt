@@ -1,0 +1,119 @@
+-- Create tables
+CREATE TABLE DEPARTMENT (
+    DNo INT PRIMARY KEY,
+    DName VARCHAR(50),
+    MgrSSN INT,
+    MgrStartDate DATE
+);
+CREATE TABLE EMPLOYEE (
+    SSN INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Address VARCHAR(100),
+    Sex CHAR(1),
+    Salary INT,
+    SuperSSN INT,
+    DNo INT,
+    FOREIGN KEY (SuperSSN) REFERENCES EMPLOYEE(SSN),
+    FOREIGN KEY (DNo) REFERENCES DEPARTMENT(DNo)
+);
+
+
+CREATE TABLE DLOCATION (
+    DNo INT,
+    DLoc VARCHAR(100),
+    PRIMARY KEY (DNo, DLoc),
+    FOREIGN KEY (DNo) REFERENCES DEPARTMENT(DNo)
+);
+
+CREATE TABLE PROJECT (
+    PNo INT PRIMARY KEY,
+    PName VARCHAR(50),
+    PLocation VARCHAR(100),
+    DNo INT,
+    FOREIGN KEY (DNo) REFERENCES DEPARTMENT(DNo)
+);
+
+CREATE TABLE WORKS_ON (
+    SSN INT,
+    PNo INT,
+    Hours INT,
+    PRIMARY KEY (SSN, PNo),
+    FOREIGN KEY (SSN) REFERENCES EMPLOYEE(SSN),
+    FOREIGN KEY (PNo) REFERENCES PROJECT(PNo)
+);
+
+-- Insert data into DEPARTMENT table
+INSERT INTO DEPARTMENT (DNo, DName, MgrSSN, MgrStartDate)
+VALUES
+    (1, 'HR', 101, '2023-01-15'),
+    (2, 'Finance', 103, '2023-02-20'),
+    (3, 'Engineering', 104, '2023-03-10'),
+    (4, 'Marketing', 105, '2023-04-05');
+    
+-- Insert data into EMPLOYEE table
+INSERT INTO EMPLOYEE (SSN, Name, Address, Sex, Salary, SuperSSN, DNo)
+VALUES
+    (101, 'John Doe', '123 Main St', 'M', 60000, NULL, 1),
+    (102, 'Jane Smith', '456 Elm St', 'F', 55000, 101, 1),
+    (103, 'Mike Johnson', '789 Oak St', 'M', 65000, 101, 2),
+    (104, 'Lisa Brown', '101 Pine St', 'F', 58000, 102, 3),
+    (105, 'David Lee', '234 Birch St', 'M', 62000, 102, 4);
+
+-- Insert data into DLOCATION table
+INSERT INTO DLOCATION (DNo, DLoc)
+VALUES
+    (1, 'New York'),
+    (2, 'Los Angeles'),
+    (3, 'Chicago'),
+    (4, 'Houston');
+
+-- Insert data into PROJECT table
+INSERT INTO PROJECT (PNo, PName, PLocation, DNo)
+VALUES
+    (201, 'Project A', 'New York', 1),
+    (202, 'Project B', 'Los Angeles', 2),
+    (203, 'Project C', 'Chicago', 3),
+    (204, 'Project D', 'Houston', 4);
+
+-- Insert data into WORKS_ON table
+INSERT INTO WORKS_ON (SSN, PNo, Hours)
+VALUES
+    (101, 201, 40),
+    (102, 202, 35),
+    (103, 202, 30),
+    (104, 203, 45),
+    (105, 204, 42);
+
+-- Alterations
+-- Add a new field "Email" to the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+ADD Email VARCHAR(100);
+
+-- Drop the "Sex" field from the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+DROP COLUMN Sex;
+
+-- Adding and Dropping Constraints
+-- Add a unique constraint to the "Email" field in the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+ADD CONSTRAINT unique_email UNIQUE (Email);
+
+-- Drop the unique constraint on the "Email" field in the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+DROP CONSTRAINT unique_email;
+
+-- Add a check constraint to the "Salary" field in the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+ADD CONSTRAINT check_salary CHECK (Salary >= 30000);
+
+-- Drop the check constraint on the "Salary" field in the EMPLOYEE table
+ALTER TABLE EMPLOYEE
+DROP CONSTRAINT check_salary;
+
+-- Display data from the tables
+SELECT * FROM EMPLOYEE;
+SELECT * FROM DEPARTMENT;
+SELECT * FROM DLOCATION;
+SELECT * FROM PROJECT;
+SELECT * FROM WORKS_ON;
+

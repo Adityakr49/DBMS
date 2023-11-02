@@ -1,0 +1,93 @@
+-- Create tables
+CREATE TABLE SAILORS (
+    sid INT PRIMARY KEY,
+    sname VARCHAR(50),
+    rating INT,
+    age INT
+);
+
+CREATE TABLE BOAT (
+    bid INT PRIMARY KEY,
+    bname VARCHAR(50),
+    color VARCHAR(20)
+);
+
+CREATE TABLE RESERVES (
+    sid INT,
+    bid INT,
+    date DATE,
+    PRIMARY KEY (sid, bid, date),
+    FOREIGN KEY (sid) REFERENCES SAILORS(sid),
+    FOREIGN KEY (bid) REFERENCES BOAT(bid)
+);
+
+-- Insert data into SAILORS table
+INSERT INTO SAILORS (sid, sname, rating, age)
+VALUES
+    (101, 'John', 5, 25),
+    (102, 'Jane', 3, 22),
+    (103, 'Mike', 4, 28),
+    (104, 'Lisa', 2, 21),
+    (105, 'David', 5, 24);
+
+-- Insert data into BOAT table
+INSERT INTO BOAT (bid, bname, color)
+VALUES
+    (201, 'Sailboat 1', 'Blue'),
+    (202, 'Canoe 1', 'Red'),
+    (203, 'Kayak 1', 'Green'),
+    (204, 'Yacht 1', 'White'),
+    (205, 'Speedboat 1', 'Yellow');
+
+-- Insert data into RESERVES table
+INSERT INTO RESERVES (sid, bid, date)
+VALUES
+    (101, 201, '2023-05-10'),
+    (102, 202, '2023-06-15'),
+    (103, 203, '2023-07-20'),
+    (104, 204, '2023-08-25'),
+    (105, 205, '2023-09-30');
+
+-- Alterations
+-- Add a new field "email" to the SAILORS table
+ALTER TABLE SAILORS
+ADD email VARCHAR(100);
+
+-- Drop the "rating" field from the SAILORS table
+ALTER TABLE SAILORS
+DROP rating;
+
+-- Adding and Dropping Constraints
+-- Add a unique constraint to the "email" field in the SAILORS table
+ALTER TABLE SAILORS
+ADD CONSTRAINT unique_email UNIQUE (email);
+
+-- Drop the unique constraint on the "email" field in the SAILORS table
+ALTER TABLE SAILORS
+DROP CONSTRAINT unique_email;
+
+-- Add a check constraint to the "age" field in the SAILORS table
+ALTER TABLE SAILORS
+ADD CONSTRAINT check_age CHECK (age >= 18 AND age <= 60);
+
+-- Drop the check constraint on the "age" field in the SAILORS table
+ALTER TABLE SAILORS
+DROP CONSTRAINT check_age;
+
+-- Add a new field "description" to the BOAT table
+ALTER TABLE BOAT
+ADD description VARCHAR(255);
+
+-- Drop the "color" field from the BOAT table
+ALTER TABLE BOAT
+DROP color;
+
+-- Add a NOT NULL constraint to the "date" field in the RESERVES table
+ALTER TABLE RESERVES
+MODIFY date DATE NOT NULL;
+
+-- Display data from the tables
+SELECT * FROM SAILORS;
+SELECT * FROM BOAT;
+SELECT * FROM RESERVES;
+
