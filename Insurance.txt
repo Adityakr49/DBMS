@@ -141,3 +141,77 @@ select * from DriversWithAccidentInPlace;
 
 INSERT INTO participated VALUES
 ("DC3D4", "F1-4223", 66666, 2000000);
+
+-- Select with WHERE clause:
+-- Retrieve drivers from Belgium:
+SELECT * FROM PERSON WHERE address = 'BELGIUM';
+
+-- Retrieve cars with a model containing 'RE':
+SELECT * FROM CAR WHERE model LIKE '%RE%';
+
+
+-- Order by:
+-- Retrieve accidents ordered by accident date in descending order:
+SELECT * FROM ACCIDENT ORDER BY acc_date DESC;
+
+-- Retrieve persons ordered by name in ascending order:
+SELECT * FROM PERSON ORDER BY name;
+
+
+-- Set Operations:
+-- Retrieve drivers who own a car OR participated in an accident:
+SELECT driver_id FROM OWNS
+UNION
+SELECT driver_id FROM PARTICIPATED;
+
+
+-- Exists and Not Exists:
+-- Retrieve drivers who participated in an accident:
+SELECT DISTINCT driver_id FROM PARTICIPATED
+WHERE EXISTS (
+    SELECT 1 FROM ACCIDENT WHERE ACCIDENT.report_no = PARTICIPATED.report_no
+);
+
+-- Retrieve cars that were not involved in any accidents:
+SELECT * FROM CAR
+WHERE NOT EXISTS (
+    SELECT 1 FROM PARTICIPATED WHERE PARTICIPATED.reg_no = CAR.reg_no
+);
+
+-- Join Operations:
+-- Retrieve information about drivers, their cars, and accidents they participated in:
+SELECT P.name, O.reg_no, A.report_no
+FROM OWNS O
+JOIN PERSON P ON O.driver_id = P.driver_id
+LEFT JOIN PARTICIPATED A ON O.driver_id = A.driver_id AND O.reg_no = A.reg_no;
+
+
+-- Aggregate Functions and Group By:
+-- Retrieve the total damage amount for each driver:
+SELECT driver_id, SUM(damage_amount) as total_damage
+FROM PARTICIPATED
+GROUP BY driver_id;
+Group By Having:
+
+-- Retrieve drivers with a total damage amount greater than 1 million:
+SELECT driver_id, SUM(damage_amount) as total_damage
+FROM PARTICIPATED
+GROUP BY driver_id
+HAVING SUM(damage_amount) > 1000000;
+
+-- Nested Queries:
+-- Retrieve drivers who own a car and participated in an accident:
+SELECT * FROM PERSON
+WHERE driver_id IN (
+    SELECT driver_id FROM OWNS
+    INTERSECT
+    SELECT driver_id FROM PARTICIPATED
+);
+
+
+-- Grant and Revoke Permissions (DCL):
+-- Grant SELECT permission on the PERSON table to a specific user:
+GRANT SELECT ON PERSON TO username;
+
+-- Revoke INSERT permission on the ACCIDENT table from a specific user:
+REVOKE INSERT ON ACCIDENT FROM username;

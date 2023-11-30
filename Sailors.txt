@@ -91,3 +91,67 @@ SELECT * FROM SAILORS;
 SELECT * FROM BOAT;
 SELECT * FROM RESERVES;
 
+-- Select with WHERE clause:
+-- Retrieve sailors with a rating greater than 4.0:
+SELECT * FROM SAILORS WHERE rating > 4.0;
+
+-- Retrieve boats with a color like 'White':(Not case sensitive)
+SELECT * FROM BOAT WHERE color LIKE '%White%';
+
+
+-- Order by:
+--Retrieve sailors ordered by age in descending order:
+SELECT * FROM SAILORS ORDER BY age DESC;
+
+-- Retrieve boats ordered by boat name in ascending order:
+SELECT * FROM BOAT ORDER BY bname;
+
+
+-- Set Operations:
+-- Retrieve sailors who have reserved a boat OR have a rating greater than 4:
+SELECT sid FROM SAILORS WHERE rating >= 4
+UNION
+SELECT sid FROM RESERVES WHERE bid = 202;
+
+
+-- Join Operations:
+-- Retrieve information about sailors and the boats they have reserved:
+SELECT s.sid, s.sname, r.bid, b.bname
+FROM SAILORS s
+JOIN RESERVES r ON s.sid = r.sid
+JOIN BOAT b ON r.bid = b.bid;
+
+
+-- Aggregate Functions and Group By:
+-- Retrieve the average rating for each boat color:
+SELECT color, AVG(rating) as avg_rating
+FROM SAILORS s
+JOIN RESERVES r ON s.sid = r.sid
+JOIN BOAT b ON r.bid = b.bid
+GROUP BY color;
+
+
+-- Group By Having:
+-- Retrieve boat colors with an average rating greater than 4:
+SELECT color, AVG(rating) as avg_rating
+FROM SAILORS s
+JOIN RESERVES r ON s.sid = r.sid
+JOIN BOAT b ON r.bid = b.bid
+GROUP BY color
+HAVING AVG(rating) > 4;
+
+
+-- Nested Queries:
+-- Retrieve sailors who have not reserved any boat:
+SELECT * FROM SAILORS
+WHERE NOT EXISTS (
+    SELECT 1 FROM RESERVES WHERE RESERVES.sid = SAILORS.sid
+);
+
+
+-- Grant and Revoke Permissions (DCL):
+-- Grant SELECT permission on the Sailors table to a specific user:
+GRANT SELECT ON SAILORS TO username;
+
+-- Revoke UPDATE permission on the Boat table from a specific user:
+REVOKE UPDATE ON BOAT FROM username;
