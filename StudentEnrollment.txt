@@ -134,3 +134,79 @@ DROP CONSTRAINT check_marks;
 ALTER TABLE COURSE
 DROP instructor;
 
+
+
+
+-- 1. Select with %LIKE, BETWEEN, WHERE Clause:
+-- Retrieve students with names starting with 'J'
+SELECT *
+FROM STUDENT
+WHERE name LIKE 'J%';
+
+-- Retrieve courses with course numbers between 200 and 400
+SELECT *
+FROM COURSE
+WHERE course BETWEEN 200 AND 400;
+-- 2. Order By:
+-- Retrieve students ordered by their birthdate in ascending order
+SELECT *
+FROM STUDENT
+ORDER BY bdate ASC;
+-- 3. Set Operations:
+-- Retrieve a list of distinct majors from students and departments from courses
+SELECT major FROM STUDENT
+UNION
+SELECT dept FROM COURSE;
+-- 4. EXISTS and NOT EXISTS:
+-- Retrieve students who have enrolled in at least one course
+SELECT *
+FROM STUDENT
+WHERE EXISTS (
+    SELECT 1
+    FROM ENROLL
+    WHERE STUDENT.regno = ENROLL.regno
+);
+
+-- Retrieve courses with no textbook adoption
+SELECT *
+FROM COURSE
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM BOOK_ADOPTION
+    WHERE COURSE.course = BOOK_ADOPTION.course
+);
+-- 5. Join Operations:
+-- Retrieve student enrollments with detailed information (student name, course name)
+SELECT STUDENT.name, COURSE.cname, ENROLL.sem, ENROLL.marks
+FROM ENROLL
+JOIN STUDENT ON ENROLL.regno = STUDENT.regno
+JOIN COURSE ON ENROLL.course = COURSE.course;
+-- 6. Aggregate Functions, GROUP BY, GROUP BY HAVING:
+-- Retrieve the average marks for each course
+SELECT course, AVG(marks) AS avg_marks
+FROM ENROLL
+GROUP BY course
+HAVING AVG(marks) > 85;
+-- 7. Nested and Correlated Nested Queries:
+-- Retrieve students who have enrolled in a course with a specific textbook author
+SELECT name
+FROM STUDENT
+WHERE regno IN (
+    SELECT regno
+    FROM ENROLL
+    WHERE course IN (
+        SELECT course
+        FROM BOOK_ADOPTION
+        WHERE book_ISBN IN (
+            SELECT book_ISBN
+            FROM TEXT
+            WHERE author = 'John Smith'
+        )
+    )
+);
+-- 8. Grant and Revoke Permissions:
+-- Grant SELECT permission on STUDENT table to a specific user
+GRANT SELECT ON STUDENT TO username;
+
+-- Revoke UPDATE permission on ENROLL table from a specific user
+REVOKE UPDATE ON ENROLL FROM username;

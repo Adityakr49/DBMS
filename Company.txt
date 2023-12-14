@@ -117,3 +117,67 @@ SELECT * FROM DLOCATION;
 SELECT * FROM PROJECT;
 SELECT * FROM WORKS_ON;
 
+
+
+-- Example 1: Simple SELECT
+-- Retrieve all employees' names and addresses
+SELECT Name, Address
+FROM EMPLOYEE;
+-- Example 2: SELECT with WHERE and ORDER BY
+-- Retrieve employees earning more than $60,000, ordered by salary in descending order
+SELECT *
+FROM EMPLOYEE
+WHERE Salary > 60000
+ORDER BY Salary DESC;
+-- Example 3: SELECT with JOIN and GROUP BY
+-- Retrieve department names and the total number of employees in each department
+SELECT D.DName, COUNT(E.SSN) AS EmployeeCount
+FROM DEPARTMENT D
+JOIN EMPLOYEE E ON D.DNo = E.DNo
+GROUP BY D.DName;
+-- Example 4: Nested Query with NOT EXISTS
+-- Retrieve projects without assigned employees
+SELECT PName
+FROM PROJECT P
+WHERE NOT EXISTS (SELECT 1 FROM WORKS_ON W WHERE W.PNo = P.PNo);
+-- Example 5: UPDATE Statement
+-- Update the location of Project A
+UPDATE PROJECT
+SET PLocation = 'Boston'
+WHERE PName = 'Project A';
+-- Example 6: DELETE Statement
+-- Delete employees with salaries less than $40,000
+DELETE FROM EMPLOYEE
+WHERE Salary < 40000;
+-- Example 7: Set Operations (UNION)
+-- Retrieve a list of unique locations across departments and projects
+SELECT DLoc FROM DLOCATION
+UNION
+SELECT PLocation FROM PROJECT;
+-- Example 8: EXISTS and JOIN
+-- Retrieve employees who are also managers
+SELECT E.Name
+FROM EMPLOYEE E
+WHERE EXISTS (SELECT 1 FROM DEPARTMENT D WHERE D.MgrSSN = E.SSN);
+-- Example 9: SELECT with LIKE
+-- Retrieve employees with addresses containing 'St'
+SELECT Name, Address
+FROM EMPLOYEE
+WHERE Address LIKE '%St%';
+-- Example 10: GROUP BY HAVING
+-- Retrieve departments with more than 2 employees
+SELECT D.DName, COUNT(E.SSN) AS EmployeeCount
+FROM DEPARTMENT D
+JOIN EMPLOYEE E ON D.DNo = E.DNo
+GROUP BY D.DName
+HAVING COUNT(E.SSN) > 2;
+-- Example 11: SELECT with BETWEEN
+-- Retrieve employees with salaries between $50,000 and $60,000
+SELECT *
+FROM EMPLOYEE
+WHERE Salary BETWEEN 50000 AND 60000;
+-- Example 12: UPDATE with JOIN
+-- Update the MgrStartDate for the HR department manager
+UPDATE DEPARTMENT D
+SET MgrStartDate = '2023-01-20'
+WHERE D.DName = 'HR';
