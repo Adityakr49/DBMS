@@ -138,3 +138,83 @@ SELECT * FROM Item;
 SELECT * FROM Shipment;
 SELECT * FROM Warehouse;
 
+
+--1. Select with %LIKE, BETWEEN, WHERE Clause:
+-- Retrieve customers in cities starting with 'N'
+SELECT *
+FROM Customer
+WHERE city LIKE 'N%';
+
+-- Retrieve orders with order amounts between 500 and 700
+SELECT *
+FROM Orders
+WHERE oid_amt BETWEEN 500 AND 700;
+
+
+--2. Order By:
+-- Retrieve orders ordered by order date in descending order
+SELECT *
+FROM Orders
+ORDER BY odate DESC;
+
+
+--3. Set Operations:
+-- Retrieve a list of distinct cities from customers and warehouses
+SELECT city FROM Customer
+UNION
+SELECT city FROM Warehouse;
+
+
+--4. EXISTS and NOT EXISTS:
+-- Retrieve orders with corresponding shipments
+SELECT *
+FROM Orders
+WHERE EXISTS (
+    SELECT 1
+    FROM Shipment
+    WHERE Orders.oid = Shipment.oid
+);
+
+-- Retrieve orders without corresponding shipments
+SELECT *
+FROM Orders
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Shipment
+    WHERE Orders.oid = Shipment.oid
+);
+
+
+--5. Join Operations:
+-- Retrieve details of items in each order with order amounts
+SELECT Orders.oid, Item.Item, Item.unitprice, OrderItem.qty, Orders.oid_amt
+FROM Orders
+JOIN OrderItem ON Orders.oid = OrderItem.oid
+JOIN Item ON OrderItem.Item = Item.Item;
+
+
+--6. Aggregate Functions, GROUP BY, GROUP BY HAVING:
+-- Retrieve the total order amount for each customer
+SELECT Customer.cust, Customer.cname, SUM(Orders.oid_amt) AS total_order_amount
+FROM Customer
+JOIN Orders ON Customer.cust = Orders.cust
+GROUP BY Customer.cust, Customer.cname
+HAVING SUM(Orders.oid_amt) > 600;
+
+
+--7. Nested and Correlated Nested Queries:
+-- Retrieve items with unit prices greater than the average unit price
+SELECT Item, unitprice
+FROM Item
+WHERE unitprice > (
+    SELECT AVG(unitprice)
+    FROM Item
+);
+
+
+--8. Grant and Revoke Permissions:
+-- Grant SELECT permission on Warehouse table to a specific user
+GRANT SELECT ON Warehouse TO username;
+
+-- Revoke UPDATE permission on Orders table from a specific user
+REVOKE UPDATE ON Orders FROM username;
