@@ -218,7 +218,3 @@ GRANT SELECT ON Warehouse TO username;
 
 -- Revoke UPDATE permission on Orders table from a specific user
 REVOKE UPDATE ON Orders FROM username;
-
-
-
-//nfjdgajk
