@@ -215,3 +215,52 @@ GRANT SELECT ON PERSON TO username;
 
 -- Revoke INSERT permission on the ACCIDENT table from a specific user:
 REVOKE INSERT ON ACCIDENT FROM username;
+
+-- Exam Questions
+
+-- 1)Find the total number of people who owned cars that were involved in accidents in 2021
+select count(p.driver_id)
+from participated p
+join accident a on a.report_no=p.report_no
+where a.accident_date like "%2021%"
+
+-- 2)Find the number of accidents in which the cars belonging to “Smith” were involved
+select count(p.report_no)
+from participated p
+join person pe on pe.driver_id=p.driver_id
+and pe.driver_name like "%smith%";
+
+-- 3)Add a new accident to the database; assume any values for required attributes
+insert into accident values
+(45562, "2024-04-05", "Mandya");
+
+insert into participated values
+("D222", "KA-21-BD-4728", 45562, 50000);
+
+-- 4)Delete the Mazda belonging to “Smith”
+delete from car
+where model="Mazda" and reg_no in
+(select car.reg_no from person p, owns o where p.driver_id=o.driver_id and o.reg_no=car.reg_no and p.driver_name="Smith");
+
+-- 5)Update the damage amount for the car with license number “KA09MA1234” in the accident with report
+Update participated set damage_amount=12030 where reg_no like "%KA-09-MA-1234%";
+select * from participated;
+
+-- 6)A view that shows models and year of cars that are involved in accident
+create view carsInAccident as
+select c.model, c.c_year
+from car c
+join participated p on c.reg_no=p.reg_no;
+select * from carsInAccident;
+
+-- 7)A trigger that prevents a driver from participating in more than 3 accidents in a given year
+DELIMITER //
+create trigger PreventParticipation
+before insert on participated
+for each row
+BEGIN
+	IF 2<=(select count(*) from participated where driver_id=new.driver_id) THEN
+		signal sqlstate '45000' set message_text='Driver has already participated in 2 accidents';
+	END IF;
+END;//
+DELIMITER ;

@@ -210,3 +210,15 @@ GRANT SELECT ON STUDENT TO username;
 
 -- Revoke UPDATE permission on ENROLL table from a specific user
 REVOKE UPDATE ON ENROLL FROM username;
+
+
+-- Exam Questions
+
+-- 1)Demonstrate how you add a new text book to the database and make this book be adopted by some department
+insert into TextBook values
+(123456, "The World Affairs", "Pearson", "Prashant Dhawan");
+insert into BookAdoption values
+(001, 5, 123456);
+
+-- 2)Produce a list of text books (include Course #, Book-ISBN, Book-title) in the alphabetical order for courses offered by the ‘CS’ department that use more than two books. 
+

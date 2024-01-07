@@ -155,3 +155,67 @@ GRANT SELECT ON SAILORS TO username;
 
 -- Revoke UPDATE permission on the Boat table from a specific user:
 REVOKE UPDATE ON BOAT FROM username;
+
+
+
+
+-- Exam Questions
+-- 1)Find the colours of boats reserved by Albert
+select b.color
+from Boat b, Sailors s,reserves r
+where b.bid=r.bid and s.sid=r.sid
+and s.sname like "Albert";
+
+-- 2)Find all sailor id’s of sailors who have a rating of at least 8 or reserved boat 103
+select DISTINCT s.sid
+from Sailors s,reserves r
+where s.sid=r.sid
+and (s.rating>=8.0 or r.bid=103);
+-- bracket is important
+
+-- 3)Find the names of sailors who have not reserved a boat whose name contains the string “storm”. Order the names in ascending order.
+select s.sname
+from Sailors s 
+where s.sid not in
+(select distinct r.sid from reserves r)
+and s.sname like "%storm%"
+order by s.sname asc;
+
+-- 4)Find the names of sailors who have reserved all boats
+select s.sname from Sailors s where not exists
+  (select * from Boat b where not exists(
+      select * from reserves r where r.bid=b.bid and s.sid=r.sid));
+      
+-- 5)Find the name and age of the oldest sailor
+select sname,age
+from Sailors 
+where age in (select max(age) from Sailors);
+
+-- 6)For each boat which was reserved by at least 5 sailors with age >= 40, find the boat id and the average age of such sailors.
+select b.bid, avg(s.age)
+from Sailors s,Boat b, reserves r
+where s.sid=r.sid and b.bid=r.bid
+and s.age>=40
+group by b.bid having count(distinct r.sid)>=2;
+
+-- 7)Create a view that shows the names and colours of all the boats that have been reserved by a sailor with a specific rating
+create view boatDetails as 
+select b.color,b.bname
+from Boat b
+join reserves r on b.bid = r.bid
+join Sailors s on s.sid = r.sid
+where s.rating=5;
+select * from boatDetails;
+
+-- 8)A trigger that prevents boats from being deleted If they have active reservations
+DELIMITER //
+create or replace trigger CheckAndDelete
+before delete on Boat
+for each row
+BEGIN
+	IF EXISTS (select * from reserves where reserves.bid=old.bid) THEN
+		SIGNAL SQLSTATE '45000' SET message_text='Boat is reserved and hence cannot be deleted';
+	END IF;
+END;//
+
+DELIMITER ;

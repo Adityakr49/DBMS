@@ -218,3 +218,58 @@ GRANT SELECT ON Warehouse TO username;
 
 -- Revoke UPDATE permission on Orders table from a specific user
 REVOKE UPDATE ON Orders FROM username;
+
+
+
+-- Exam Questions
+-- 1)List the OrderId and Ship_date for all orders shipped from Warehouseid "W2" i.e 0002
+select * from Shipments where warehouse_id=0002;
+
+-- 2)List the Warehouse information from which the Customer named "Kumar" was supplied his orders. Produce a listing of Order#, Warehouse#
+select w.warehouse_id,w.city
+from Warehouses w
+join Shipments s on s.warehouse_id=w.warehouse_id
+join orders o on s.order_id=o.order_id
+join Customers c on c.cust_id=o.cust_id
+where c.cname like "%Kumar";
+
+-- 3)Produce a listing: Cname, #ofOrders, Avg_Order_Amt, where the middle column is the total number of orders by the customer and the last column is the average order amount for that customer. (Use aggregate functions)
+select c.cname, count(o.order_id), avg(o.order_amt)
+from customers c
+join orders o on o.cust_id=c.cust_id
+group by c.cname;
+
+-- 4)Delete all orders for customer named "Kumar".
+Delete from orders where cust_id in (select cust_id from customers where cname like "%Kumar%");
+select * from orders;
+
+-- 5)Find the item with the maximum unit price
+select max(unitprice) from Items;
+
+-- 6)A trigger that updates order_amout based on quantity and unitprice of order_item
+delimiter //
+CREATE OR REPLACE TRIGGER hsh
+AFTER INSERT ON OrderItems
+FOR EACH ROW
+BEGIN
+    UPDATE Orders
+    SET order_amt = NEW.qty * (
+        SELECT i.unitprice FROM Items i WHERE i.item_id = NEW.item_id
+    )
+    WHERE order_id = NEW.order_id;
+END;
+//
+delimiter ;
+
+-- 7)Create a view to display orderID and shipment date of all orders shipped from a warehouse 5
+Create view ShipmentDatesFromWarehouse as
+select s.order_id, s.ship_date
+from Shipments s
+where s.warehouse_id=2;
+select * from ShipmentDatesFromWarehouse;
+
+
+
+
+
+
