@@ -221,4 +221,55 @@ insert into BookAdoption values
 (001, 5, 123456);
 
 -- 2)Produce a list of text books (include Course #, Book-ISBN, Book-title) in the alphabetical order for courses offered by the ‘CS’ department that use more than two books. 
+select b.course, b.bookIsbn, t.book_title
+from BookAdoption b
+join TextBook t on b.bookIsbn=t.bookIsbn
+join Course c on b.course=c.course
+where c.dept like "%CS%";
 
+-- 3)List any department that has all its adopted books published by a specific publisher.
+SELECT DISTINCT c.dept
+     FROM Course c
+     WHERE c.dept IN
+     ( SELECT c.dept
+     FROM Course c,BookAdoption b,TextBook t
+     WHERE c.course=b.course
+     AND t.bookIsbn=b.bookIsbn
+     AND t.publisher='PEARSON')
+     AND c.dept NOT IN
+     ( SELECT c.dept
+     FROM Course c, BookAdoption b, TextBook t
+     WHERE c.course=b.course
+     AND t.bookIsbn=b.bookIsbn
+     AND t.publisher!='PEARSON');
+     
+-- 4)List the students who have scored maximum marks in ‘DBMS’ course.
+select s.name,e.regno
+from Enroll e
+join Student s on e.regno=s.regno
+join Course c on e.course=c.course
+where c.cname like "%DBMS%"
+and e.marks in (select max(marks) from Enroll e1
+join Course c1 on c1.course=e1.course
+where c1.cname='DBMS');
+
+-- 5)Create a view to display all the courses opted by a student along with marks obtained
+create view CourseOpted as
+select c.cname,e.marks
+from Course c, Enroll e
+where c.course=e.course
+and e.regno = '01HF235';
+select * from CourseOpted;
+
+-- 6)Create a trigger that prevents a student from enrolling in a course if the marks prerequisite is less than 40.
+delimiter //
+create trigger preventEnrollment
+before insert on Enroll
+for each row
+begin
+  if (new.marks<10) then 
+    signal sqlstate '45000' set message_text='marks below threshold';
+  end if;
+end;
+//
+delimiter ;
