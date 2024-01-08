@@ -193,3 +193,42 @@ select e.name,e.salary as old, 1.1*e.salary as new
 from Employee e,Project p,WorksOn w
 where e.ssn=w.ssn and p.p_no=w.p_no
 and p.p_name like "%IOT%";
+
+-- 3)Find the sum of the salaries of all employees of the ‘Accounts’ department, as well as the maximum salary, the minimum salary, and the average salary in this department
+select sum(e.salary),max(e.salary),min(e.salary),avg(e.salary)
+from Employee e
+join Department d on d.d_no=e.d_no
+where d.dname like "%Accounts%";
+
+-- 4)Retrieve the name of each employee who works on all the projects controlled by department number 5 (use NOT EXISTS operator).
+select e.ssn,e.name,e.d_no
+from Employee e
+where not EXISTS(select p.p_no from Project p where p.d_no=1 and p.p_no 
+not in (select w.p_no from WorksOn w where w.ssn=e.ssn));
+
+-- 5)For each department that has more than five employees, retrieve the department number and the number of its employees who are making more than Rs. 6,00,000
+select d.d_no,count(*)
+from Department d, Employee e
+where d.d_no=e.d_no and e.salary>600000
+group by d.d_no
+having count(*)>1;
+
+-- 6)Create a view that shows name, dept name and location of all employees.
+create view emp_details as
+select name,dname,d_loc from Employee e 
+join Department d on e.d_no=d.d_no 
+join DLocation dl on d.d_no=dl.d_no;
+select * from emp_details;
+
+-- 7)Create a trigger that prevents a project from being deleted if it is currently being worked by any employee
+delimiter //
+create trigger xyz
+before delete on Project
+for each row
+begin
+  IF exists(select * from WorksOn where p_no=old.p_no)then
+    signal sqlstate '45000' set message_text='Employee working on project';
+  end if;
+end;
+//
+delimiter ;
